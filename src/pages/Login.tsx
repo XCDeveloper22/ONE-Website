@@ -4,22 +4,36 @@ import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Login() {
-  const { login, user, authError, isLoggingIn } = useAuth();
+  const { login, user, loading, authError, isLoggingIn } = useAuth();
   const navigate = useNavigate();
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    try {
+      // If we already have a cached user session, skip splash screen to redirect instantly
+      return !localStorage.getItem('one_user');
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
 
   useEffect(() => {
+    // If loading is finished and user is not authenticated, hide splash screen immediately
+    if (!loading && !user) {
+      setShowSplash(false);
+      return;
+    }
+
+    // Otherwise, show a very brief and elegant splash screen (800ms max)
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2000);
+    }, 800);
     return () => clearTimeout(timer);
-  }, []);
+  }, [loading, user]);
 
   return (
     <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-4 relative overflow-hidden">

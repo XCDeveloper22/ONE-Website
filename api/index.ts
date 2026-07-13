@@ -90,9 +90,10 @@ app.get(["/api/auth/callback", "/api/auth/callback/"], async (req, res) => {
 
     const userData = await userResponse.json();
 
+    const isLocalhost = req.headers.host?.includes('localhost') || false;
     res.cookie("discord_token", tokenData.access_token, {
-      secure: true,
-      sameSite: "none",
+      secure: !isLocalhost,
+      sameSite: isLocalhost ? "lax" : "none",
       httpOnly: true,
       maxAge: tokenData.expires_in * 1000,
     });
@@ -189,9 +190,10 @@ app.get("/api/connections", async (req, res) => {
 
 // 6. Logout
 app.post("/api/logout", (req, res) => {
+  const isLocalhost = req.headers.host?.includes('localhost') || false;
   res.clearCookie("discord_token", {
-    secure: true,
-    sameSite: "none",
+    secure: !isLocalhost,
+    sameSite: isLocalhost ? "lax" : "none",
     httpOnly: true,
   });
   res.json({ success: true });

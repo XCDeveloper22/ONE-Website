@@ -14,13 +14,27 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<DiscordUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<DiscordUser | null>(() => {
+    try {
+      const cached = localStorage.getItem('one_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      // If we already have a cached user, we can skip the blocking loading screen
+      return !localStorage.getItem('one_user');
+    } catch {
+      return true;
+    }
+  });
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Check if user is already logged in & revalidate
     fetch('/api/me')
       .then(res => {
         if (res.ok) return res.json();
@@ -28,9 +42,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       .then(data => {
         setUser(data);
+        try {
+          localStorage.setItem('one_user', JSON.stringify(data));
+        } catch (e) {
+          console.error('Failed to cache user', e);
+        }
       })
       .catch(() => {
         setUser(null);
+        try {
+          localStorage.removeItem('one_user');
+          localStorage.removeItem('one_guilds');
+          localStorage.removeItem('one_connections');
+        } catch (e) {
+          console.error('Failed to clear cache', e);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -44,7 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS' && event.data?.user) {
-        setUser(event.data.user);
+        const loggedInUser = event.data.user;
+        setUser(loggedInUser);
+        try {
+          localStorage.setItem('one_user', JSON.stringify(loggedInUser));
+        } catch (e) {
+          console.error('Failed to cache user', e);
+        }
         setAuthError(null);
         setIsLoggingIn(false);
       }
@@ -94,9 +126,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await fetch('/api/logout', { method: 'POST' });
-      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      try {
+        localStorage.removeItem('one_user');
+        localStorage.removeItem('one_guilds');
+        localStorage.removeItem('one_connections');
+      } catch (e) {
+        console.error('Failed to clear localStorage keys', e);
+      }
     }
   };
 

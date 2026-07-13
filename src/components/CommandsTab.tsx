@@ -37,8 +37,8 @@ const commandsData: Command[] = [
     trigger: '!in',
     type: 'prefix',
     category: 'attendance',
-    description: 'Check in for the day. Starts your shift tracker and increments your consecutive attendance streak.',
-    usage: '!in [optional notes]',
+    description: 'Begins tracking your active session/shift. Tracks daily consecutive attendance streaks.',
+    usage: '!in [notes]',
     args: ['notes'],
     demoResponse: {
       userMsg: '!in working on dashboard',
@@ -66,7 +66,7 @@ const commandsData: Command[] = [
     trigger: '/in',
     type: 'slash',
     category: 'attendance',
-    description: 'Slash version of checking in for the day to log attendance.',
+    description: 'Slash command counterpart to clock into your shift.',
     usage: '/in [notes]',
     args: ['notes'],
     demoResponse: {
@@ -94,7 +94,7 @@ const commandsData: Command[] = [
     trigger: '!out',
     type: 'prefix',
     category: 'attendance',
-    description: 'Check out for the day. Calculates your total checked-in hours for your shift.',
+    description: 'Stops tracking your session and calculates total shift duration.',
     usage: '!out',
     demoResponse: {
       userMsg: '!out',
@@ -121,7 +121,7 @@ const commandsData: Command[] = [
     trigger: '/out',
     type: 'slash',
     category: 'attendance',
-    description: 'Slash version of clocking out for the day.',
+    description: 'Slash command counterpart to clock out of your shift.',
     usage: '/out',
     demoResponse: {
       userMsg: '/out',
@@ -143,11 +143,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Attendance Stats',
+    name: 'Stats',
     trigger: '!stats',
     type: 'prefix',
     category: 'attendance',
-    description: 'View your attendance records, total tracked hours, streak, and monthly average.',
+    description: 'View comprehensive personal records, streaks, uptime, and monthly averages.',
     usage: '!stats [@user]',
     args: ['user'],
     demoResponse: {
@@ -172,11 +172,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Attendance Stats (Slash)',
+    name: 'Stats (Slash)',
     trigger: '/stats',
     type: 'slash',
     category: 'attendance',
-    description: 'Slash version to view detailed attendance statistics and shift history.',
+    description: 'Slash command counterpart to view attendance metrics.',
     usage: '/stats [user]',
     args: ['user'],
     demoResponse: {
@@ -199,11 +199,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Attendance Leaderboard',
+    name: 'Leaderboard',
     trigger: '!leaderboard',
     type: 'prefix',
     category: 'attendance',
-    description: 'Display the server-wide attendance ranking leaderboard based on total shift hours.',
+    description: 'Ranks all active guild members based on total checked-in shift hours this month.',
     usage: '!leaderboard',
     demoResponse: {
       userMsg: '!leaderboard',
@@ -221,11 +221,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Attendance Leaderboard (Slash)',
+    name: 'Leaderboard (Slash)',
     trigger: '/leaderboard',
     type: 'slash',
     category: 'attendance',
-    description: 'Slash version to view the server attendance ranking board.',
+    description: 'Slash command counterpart to display current active rankings.',
     usage: '/leaderboard',
     demoResponse: {
       userMsg: '/leaderboard',
@@ -245,13 +245,13 @@ const commandsData: Command[] = [
 
   // Sticky Messages
   {
-    name: 'Create Sticky Message',
+    name: 'Create Sticky',
     trigger: '!sticky',
     type: 'prefix',
     category: 'sticky',
-    description: 'Spawns a sticky message in the current channel. The bot keeps re-posting it at the very bottom whenever new messages arrive.',
-    usage: '!sticky <message_content>',
-    args: ['message_content'],
+    description: 'Spawns a sticky anchor message in the channel that re-posts itself at the bottom.',
+    usage: '!sticky <message>',
+    args: ['message'],
     permissions: 'Manage Messages',
     demoResponse: {
       userMsg: '!sticky Read the rules in #rules!',
@@ -273,11 +273,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Remove Sticky Message',
+    name: 'Remove Sticky',
     trigger: '!unsticky',
     type: 'prefix',
     category: 'sticky',
-    description: 'Removes any active sticky messages from the current channel.',
+    description: 'Disables and cleans up active sticky posts in the current channel.',
     usage: '!unsticky',
     permissions: 'Manage Messages',
     demoResponse: {
@@ -295,8 +295,8 @@ const commandsData: Command[] = [
     trigger: '/sticky set',
     type: 'slash',
     category: 'sticky',
-    description: 'Slash command to create a sticky message in the channel.',
-    usage: '/sticky set message:<content>',
+    description: 'Slash command counterpart to configure a dynamic sticky prompt.',
+    usage: '/sticky set message:<msg>',
     args: ['message'],
     permissions: 'Manage Messages',
     demoResponse: {
@@ -317,11 +317,11 @@ const commandsData: Command[] = [
 
   // Lofi & Voice Streaming
   {
-    name: 'Play 24/7 Lofi',
+    name: 'Play Lofi',
     trigger: '!lofi',
     type: 'prefix',
     category: 'lofi',
-    description: 'Summons the bot to your current voice channel to stream relaxing 24/7 lofi hip-hop radio beats.',
+    description: 'Summons the bot to your current voice channel to stream relaxing 24/7 lofi hip-hop.',
     usage: '!lofi',
     demoResponse: {
       userMsg: '!lofi',
@@ -348,11 +348,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Stop Lofi Stream',
+    name: 'Stop Stream',
     trigger: '!stop',
     type: 'prefix',
     category: 'lofi',
-    description: 'Disconnects the bot from the voice channel and stops streaming music.',
+    description: 'Disconnects the voice client and halts music streaming.',
     usage: '!stop',
     demoResponse: {
       userMsg: '!stop',
@@ -365,11 +365,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Lofi Join (Slash)',
+    name: 'Play Lofi (Slash)',
     trigger: '/lofi join',
     type: 'slash',
     category: 'lofi',
-    description: 'Slash command to summon bot to stream 24/7 lofi radio.',
+    description: 'Slash command counterpart to start the voice channel streaming stream.',
     usage: '/lofi join',
     demoResponse: {
       userMsg: '/lofi join',
@@ -389,11 +389,11 @@ const commandsData: Command[] = [
 
   // Chat Revival Tools
   {
-    name: 'Revive Chat Prompt',
+    name: 'Revive Chat',
     trigger: '!revive',
     type: 'prefix',
     category: 'revival',
-    description: 'Generates a highly engaging conversation starter or mini-game topic to rescue quiet, inactive chat rooms.',
+    description: 'Generates an engaging conversation starter or mini-game prompt to spark discussion.',
     usage: '!revive',
     demoResponse: {
       userMsg: '!revive',
@@ -411,11 +411,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Random Topic Query',
+    name: 'Random Topic',
     trigger: '!topic',
     type: 'prefix',
     category: 'revival',
-    description: 'Generates a random prompt, question, or "Would you rather" challenge for general chatting.',
+    description: 'Broadcasts a quirky topic, debate prompt, or "Would you rather" challenge.',
     usage: '!topic',
     demoResponse: {
       userMsg: '!topic',
@@ -430,11 +430,11 @@ const commandsData: Command[] = [
 
   // Meme / Brainrot
   {
-    name: 'Generate Brainrot',
+    name: 'Brainrot',
     trigger: '!brainrot',
     type: 'prefix',
     category: 'brainrot',
-    description: 'Triggers random chaotic meme generators that output hyper-modern Gen-Z slang / "brainrot" stories or sound effects.',
+    description: 'Generates chaotic, slang-infused stories, Rizz checks, and community jokes.',
     usage: '!brainrot',
     demoResponse: {
       userMsg: '!brainrot',
@@ -460,7 +460,7 @@ const commandsData: Command[] = [
     trigger: '/brainrot',
     type: 'slash',
     category: 'brainrot',
-    description: 'Slash version of the chaotic Gen-Z brainrot generator.',
+    description: 'Slash command counterpart to initiate meme chaos.',
     usage: '/brainrot',
     demoResponse: {
       userMsg: '/brainrot',
@@ -479,7 +479,7 @@ const commandsData: Command[] = [
     trigger: '!kick',
     type: 'prefix',
     category: 'moderation',
-    description: 'Kicks a specified member from the server. Member can join back with an active invite code.',
+    description: 'Kicks a specified member from the server corridor. User is free to rejoin.',
     usage: '!kick <@user> [reason]',
     args: ['user', 'reason'],
     permissions: 'Kick Members',
@@ -508,7 +508,7 @@ const commandsData: Command[] = [
     trigger: '!ban',
     type: 'prefix',
     category: 'moderation',
-    description: 'Permanently bans a specified member from the server to prevent re-joining.',
+    description: 'Permanently bans a specified user and purges recent messages.',
     usage: '!ban <@user> [reason]',
     args: ['user', 'reason'],
     permissions: 'Ban Members',
@@ -533,11 +533,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Purge Messages',
+    name: 'Purge Chat',
     trigger: '!purge',
     type: 'prefix',
     category: 'moderation',
-    description: 'Bulk deletes up to 100 recent messages in the current text channel.',
+    description: 'Mass-deletes up to 100 messages to clean up spam in a text channel.',
     usage: '!purge <amount>',
     args: ['amount'],
     permissions: 'Manage Messages',
@@ -552,11 +552,11 @@ const commandsData: Command[] = [
     }
   },
   {
-    name: 'Timeout / Mute',
+    name: 'Timeout (Slash)',
     trigger: '/timeout',
     type: 'slash',
     category: 'moderation',
-    description: 'Mutes a user for a set duration, blocking them from sending messages or joining voice channels.',
+    description: 'Temporarily puts a user in timeout, stripping their chat privileges.',
     usage: '/timeout user:<@user> duration:<time> [reason]',
     args: ['user', 'duration', 'reason'],
     permissions: 'Moderate Members',
@@ -620,12 +620,12 @@ export default function CommandsTab() {
 
   const categories = [
     { id: 'all', label: 'All Modules', icon: HelpCircle },
-    { id: 'attendance', label: 'Attendance', icon: Calendar },
+    { id: 'attendance', label: 'Attendance System', icon: Calendar },
     { id: 'sticky', label: 'Sticky Messages', icon: Pin },
-    { id: 'lofi', label: 'Lofi Voice', icon: Music },
-    { id: 'revival', label: 'Chat Revival', icon: MessageSquare },
-    { id: 'brainrot', label: 'Brainrot Meme', icon: Sparkles },
-    { id: 'moderation', label: 'Moderation', icon: ShieldAlert },
+    { id: 'lofi', label: '24/7 Lofi Streamer', icon: Music },
+    { id: 'revival', label: 'Chat Revival & Social', icon: MessageSquare },
+    { id: 'brainrot', label: 'Brainrot & Memes', icon: Sparkles },
+    { id: 'moderation', label: 'Moderation Utility', icon: ShieldAlert },
   ];
 
   const filteredCommands = commandsData.filter(cmd => {
@@ -706,7 +706,7 @@ export default function CommandsTab() {
         </div>
 
         {/* Categories sliding rail */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
           {categories.map((cat) => (
             <button
               key={cat.id}
@@ -736,7 +736,7 @@ export default function CommandsTab() {
             </span>
           </div>
 
-          <div className="space-y-3.5 max-h-[600px] overflow-y-auto pr-1 custom-scrollbar">
+          <div className="space-y-3.5 max-h-[600px] overflow-y-auto pr-1 no-scrollbar">
             {filteredCommands.length === 0 ? (
               <div className="text-center p-12 bg-zinc-900/10 border border-zinc-800/40 rounded-3xl text-zinc-500">
                 <HelpCircle className="w-10 h-10 mx-auto mb-3 opacity-25" />
@@ -843,7 +843,7 @@ export default function CommandsTab() {
             </div>
 
             {/* Chat message content box */}
-            <div className="flex-1 overflow-y-auto p-4.5 space-y-4 font-sans select-none custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4.5 space-y-4 font-sans select-none no-scrollbar">
               
               {/* Help tip when idle */}
               {!isSimulating && simulatedLogs.length === 0 && (

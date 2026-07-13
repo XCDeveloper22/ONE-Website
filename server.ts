@@ -3,12 +3,16 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import http from "http";
 import apiApp from "./api/index.js";
+import { initSocket } from "./api/socket.js";
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
   
   const httpServer = http.createServer(app);
+
+  // Initialize Socket.io
+  initSocket(httpServer);
 
   // Mount API routes
   app.use(apiApp);

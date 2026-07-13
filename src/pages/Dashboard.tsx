@@ -8,8 +8,9 @@ import { DiscordGuild, DiscordConnection } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import BotStatusWidget from '../components/BotStatusWidget';
 import CommandsTab from '../components/CommandsTab';
+import WorldChatTab from '../components/WorldChatTab';
 
-type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'moderation' | 'settings';
+type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'world_chat' | 'moderation' | 'settings';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -154,6 +155,7 @@ export default function Dashboard() {
     { id: 'servers' as const, label: 'Servers', icon: Server },
     { id: 'members' as const, label: 'Members', icon: Users },
     { id: 'commands' as const, label: 'Commands', icon: Code2 },
+    { id: 'world_chat' as const, label: 'World Chat', icon: Globe },
     { id: 'moderation' as const, label: 'Moderation', icon: Shield, locked: true },
     { id: 'settings' as const, label: 'Settings', icon: Settings, locked: true },
   ];
@@ -340,7 +342,9 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 z-10 relative overflow-hidden">
         <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-zinc-800/50 bg-zinc-950/30 backdrop-blur-md shrink-0">
-          <h1 className="text-lg md:text-xl font-bold text-white capitalize tracking-tight">{activeTab} Dashboard</h1>
+          <h1 className="text-lg md:text-xl font-bold text-white capitalize tracking-tight">
+            {activeTab === 'world_chat' ? 'World Chat' : `${activeTab} Dashboard`}
+          </h1>
           <div className="flex items-center gap-3 text-xs md:text-sm font-medium bg-zinc-900/50 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-zinc-800">
             <span className="text-zinc-500 hidden sm:inline">System:</span>
             <span className="flex items-center gap-1.5 text-emerald-400">
@@ -350,8 +354,8 @@ export default function Dashboard() {
           </div>
         </header>
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          <div className="max-w-5xl mx-auto">
+        <main className={`flex-1 overflow-y-auto ${activeTab === 'world_chat' ? 'p-0 md:p-8' : 'p-4 md:p-8'} custom-scrollbar`}>
+          <div className={activeTab === 'world_chat' ? 'w-full max-w-full md:max-w-5xl md:mx-auto' : 'max-w-5xl mx-auto'}>
             
             <AnimatePresence mode="wait">
               {needsReauth && (
@@ -685,6 +689,18 @@ export default function Dashboard() {
                   transition={{ duration: 0.3 }}
                 >
                   <CommandsTab />
+                </motion.div>
+              )}
+
+              {activeTab === 'world_chat' && (
+                <motion.div
+                  key="world_chat"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <WorldChatTab />
                 </motion.div>
               )}
 

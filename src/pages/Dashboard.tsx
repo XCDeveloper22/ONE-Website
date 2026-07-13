@@ -7,8 +7,9 @@ import {
 import { DiscordGuild, DiscordConnection } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import BotStatusWidget from '../components/BotStatusWidget';
+import CommandsTab from '../components/CommandsTab';
 
-type Tab = 'overview' | 'servers' | 'members' | 'moderation' | 'settings';
+type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'moderation' | 'settings';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -152,6 +153,7 @@ export default function Dashboard() {
     { id: 'overview' as const, label: 'Overview', icon: BarChart3 },
     { id: 'servers' as const, label: 'Servers', icon: Server },
     { id: 'members' as const, label: 'Members', icon: Users },
+    { id: 'commands' as const, label: 'Commands', icon: Code2 },
     { id: 'moderation' as const, label: 'Moderation', icon: Shield, locked: true },
     { id: 'settings' as const, label: 'Settings', icon: Settings, locked: true },
   ];
@@ -671,6 +673,18 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'commands' && (
+                <motion.div
+                  key="commands"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CommandsTab />
                 </motion.div>
               )}
 

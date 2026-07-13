@@ -1,6 +1,8 @@
 {
-  "name": "Discord Bot Dashboard",
+  "name": "Remix: ONE",
   "description": "A clean Discord bot dashboard with Discord OAuth login authentication.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

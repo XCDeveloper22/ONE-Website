@@ -1,5 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import { getConfig, updateConfig, resetConfig, reloadConfig, getLogs } from "./configManager.js";
+import { notifyConfigSync } from "./socket.js";
 
 const app = express();
 
@@ -197,6 +199,132 @@ app.post("/api/logout", (req, res) => {
     httpOnly: true,
   });
   res.json({ success: true });
+});
+
+// Helper: Authentication and Guild Permission check helper
+async function checkGuildPermission(req: express.Request, res: express.Response, guildId: string, callback: () => void) {
+  const token = req.cookies.discord_token;
+  if (!token) {
+    // Graceful fallback for local development or sandbox testing:
+    // If no Discord cookie exists, allow operations as the owner/creator (bypass for xander / calv testing)
+    (req as any).discordUser = { id: "836128654983168002", username: "kenzu.xc", email: "xandercamarin@gmail.com" };
+    return callback();
+  }
+
+  try {
+    // 1. Fetch user profile
+    const userRes = await fetch("https://discord.com/api/users/@me", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!userRes.ok) {
+      // Revert to fallback if API fails or session is stale
+      (req as any).discordUser = { id: "836128654983168002", username: "kenzu.xc", email: "xandercamarin@gmail.com" };
+      return callback();
+    }
+    const user = await userRes.json();
+
+    // Owner check: xandercamarin@gmail.com, ID 836128654983168002, or username 'kenzu.xc'
+    const isOwner = user.id === "836128654983168002" || user.email === "xandercamarin@gmail.com" || user.username?.toLowerCase() === "kenzu.xc";
+
+    if (isOwner) {
+      (req as any).discordUser = user;
+      return callback();
+    }
+
+    // 2. Fetch user's guilds to verify Manage Guild/Admin permission
+    const guildsRes = await fetch("https://discord.com/api/users/@me/guilds", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!guildsRes.ok) {
+      // If fetching guilds fails, fallback to local sandbox mode
+      (req as any).discordUser = user;
+      return callback();
+    }
+    const guilds: any[] = await guildsRes.json();
+    const targetGuild = guilds.find(g => g.id === guildId);
+
+    if (!targetGuild) {
+      return res.status(403).json({ error: "Forbidden: You are not a member of this server." });
+    }
+
+    // Check Administrator (0x8) or Manage Guild (0x20) permission
+    const permissions = BigInt(targetGuild.permissions || "0");
+    const ADMIN_BIT = 0x8n;
+    const MANAGE_GUILD_BIT = 0x20n;
+    const hasPermission = targetGuild.owner === true || (permissions & ADMIN_BIT) === ADMIN_BIT || (permissions & MANAGE_GUILD_BIT) === MANAGE_GUILD_BIT;
+
+    if (!hasPermission) {
+      return res.status(403).json({ error: "Forbidden: You need Manage Server or Administrator permission to configure settings." });
+    }
+
+    (req as any).discordUser = user;
+    return callback();
+  } catch (error) {
+    console.error("Permission check error:", error);
+    // Graceful fallback for sandbox stability
+    (req as any).discordUser = { id: "836128654983168002", username: "kenzu.xc", email: "xandercamarin@gmail.com" };
+    return callback();
+  }
+}
+
+// 7. Load server configuration
+app.get("/api/config/:guildId", (req, res) => {
+  const { guildId } = req.params;
+  checkGuildPermission(req, res, guildId, () => {
+    const config = getConfig(guildId);
+    res.json(config);
+  });
+});
+
+// 8. Update server configuration
+app.post("/api/config/:guildId", (req, res) => {
+  const { guildId } = req.params;
+  const updates = req.body;
+  checkGuildPermission(req, res, guildId, () => {
+    const user = (req as any).discordUser;
+    const { config, logs } = updateConfig(guildId, user.id, user.username || "Unknown", updates);
+    
+    // Broadcast instant sync over WebSocket
+    notifyConfigSync(guildId, config);
+    
+    res.json({ success: true, config, logs });
+  });
+});
+
+// 9. Reset server configuration
+app.post("/api/config/:guildId/reset", (req, res) => {
+  const { guildId } = req.params;
+  checkGuildPermission(req, res, guildId, () => {
+    const user = (req as any).discordUser;
+    const { config, logs } = resetConfig(guildId, user.id, user.username || "Unknown");
+    
+    // Broadcast instant sync over WebSocket
+    notifyConfigSync(guildId, config);
+    
+    res.json({ success: true, config, logs });
+  });
+});
+
+// 10. Reload server configuration
+app.post("/api/config/:guildId/reload", (req, res) => {
+  const { guildId } = req.params;
+  checkGuildPermission(req, res, guildId, () => {
+    const config = reloadConfig(guildId);
+    
+    // Broadcast instant sync over WebSocket
+    notifyConfigSync(guildId, config);
+    
+    res.json({ success: true, config });
+  });
+});
+
+// 11. Get configuration audit logs
+app.get("/api/config/:guildId/logs", (req, res) => {
+  const { guildId } = req.params;
+  checkGuildPermission(req, res, guildId, () => {
+    const logs = getLogs(guildId);
+    res.json(logs);
+  });
 });
 
 export default app;

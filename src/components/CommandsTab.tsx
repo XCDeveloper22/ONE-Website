@@ -58,7 +58,7 @@ const commandsData: Command[] = [
       botMsgs: [
         {
           type: 'text',
-          content: '✅ **Xander#0001** has been marked **Present**!'
+          content: '✅ **Kenzu#0001** has been marked **Present**!'
         }
       ]
     }
@@ -75,7 +75,7 @@ const commandsData: Command[] = [
       botMsgs: [
         {
           type: 'text',
-          content: '❌ **Xander#0001** has been marked **Absent**.'
+          content: '❌ **Kenzu#0001** has been marked **Absent**.'
         }
       ]
     }
@@ -97,7 +97,7 @@ const commandsData: Command[] = [
             description: 'Successfully checked in for today\'s NSTP session.',
             color: '#3B82F6',
             fields: [
-              { name: 'Student', value: 'Xander#0001', inline: true },
+              { name: 'Student', value: 'Kenzu#0001', inline: true },
               { name: 'Program', value: 'NSTP-1', inline: true },
               { name: 'Status', value: '🟢 Present', inline: true }
             ],
@@ -152,7 +152,7 @@ const commandsData: Command[] = [
             description: 'Top attendees in this server.',
             color: '#F59E0B',
             fields: [
-              { name: '🥇 1st Place', value: 'Xander#0001 - 100% (24 Sessions)', inline: false },
+              { name: '🥇 1st Place', value: 'Kenzu#0001 - 100% (24 Sessions)', inline: false },
               { name: '🥈 2nd Place', value: 'CyberDev#4200 - 98% (23 Sessions)', inline: false },
               { name: '🥉 3rd Place', value: 'AuraWave#1337 - 95% (22 Sessions)', inline: false }
             ],
@@ -818,7 +818,7 @@ const commandsData: Command[] = [
             color: '#8B5CF6',
             fields: [
               { name: 'Channel', value: '🔊 General Lounge', inline: true },
-              { name: 'Requested By', value: 'Xander#0001', inline: true }
+              { name: 'Requested By', value: 'Kenzu#0001', inline: true }
             ],
             footer: 'ONE Music Streaming Service'
           }
@@ -1098,11 +1098,11 @@ const commandsData: Command[] = [
     usage: '!nick <new_name>',
     args: ['name'],
     demoResponse: {
-      userMsg: '!nick Xander',
+      userMsg: '!nick Kenzu',
       botMsgs: [
         {
           type: 'text',
-          content: '🏷️ Your nickname has been updated to **[DEV] Xander**.'
+          content: '🏷️ Your nickname has been updated to **[DEV] Kenzu**.'
         }
       ]
     }
@@ -1398,7 +1398,7 @@ const commandsData: Command[] = [
             description: 'Tracked player session records.',
             color: '#10B981',
             fields: [
-              { name: 'Player', value: 'Xander#0001', inline: true },
+              { name: 'Player', value: 'Kenzu#0001', inline: true },
               { name: 'Matches Won', value: '🏆 48 Wins', inline: true },
               { name: 'Last Updated', value: 'Just now', inline: true }
             ],
@@ -1698,7 +1698,7 @@ const commandsData: Command[] = [
             description: 'The race has finished! Final Standings:',
             color: '#F59E0B',
             fields: [
-              { name: '🥇 1st Place', value: 'Bamboo (User: Xander) [Speed: 12m/s]', inline: false },
+              { name: '🥇 1st Place', value: 'Bamboo (User: Kenzu) [Speed: 12m/s]', inline: false },
               { name: '🥈 2nd Place', value: 'Spike (User: CyberDev) [Speed: 10m/s]', inline: false }
             ],
             footer: 'Bamboo won the gold and 1000 coins!'
@@ -1783,7 +1783,7 @@ const commandsData: Command[] = [
             description: '<@CyberDev> has been banned from the Discord server.',
             color: '#EF4444',
             fields: [
-              { name: 'Moderator', value: 'Xander#0001', inline: true },
+              { name: 'Moderator', value: 'Kenzu#0001', inline: true },
               { name: 'Reason', value: 'rule breaking (not sharing memes)', inline: true }
             ],
             footer: 'Just kidding! This is a simulated fakeban prank. 🤪'
@@ -1967,7 +1967,7 @@ const commandsData: Command[] = [
       botMsgs: [
         {
           type: 'text',
-          content: '🖼️ Fetching profile graphics for **Xander#0001**...'
+          content: '🖼️ Fetching profile graphics for **Kenzu#0001**...'
         }
       ]
     }
@@ -2209,13 +2209,13 @@ const commandsData: Command[] = [
     usage: '/dripcheck user:<@user>',
     args: ['user'],
     demoResponse: {
-      userMsg: '/dripcheck user: @Xander',
+      userMsg: '/dripcheck user: @Kenzu',
       botMsgs: [
         {
           type: 'embed',
           embed: {
             title: '👟 Fashion Drip Evaluation',
-            description: 'Assessing profile picture for user <@Xander>...',
+            description: 'Assessing profile picture for user <@Kenzu>...',
             color: '#EF4444',
             fields: [
               { name: 'Drip Level', value: '📉 -200% Absolute Garbage', inline: true },
@@ -2333,7 +2333,7 @@ export default function CommandsTab() {
     {
       sender: 'bot',
       type: 'text',
-      text: '✅ **Xander#0001** has been marked **Present**!'
+      text: '✅ **Kenzu#0001** has been marked **Present**!'
     }
   ]);
 
@@ -2616,11 +2616,11 @@ export default function CommandsTab() {
                     <div key={index} className="flex gap-4 items-start group">
                       {/* Avatar */}
                       <div className="w-10 h-10 rounded-full bg-[#5865f2] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">
-                        XD
+                        KZ
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <span className="text-white font-bold text-sm hover:underline cursor-pointer">Xander#0001</span>
+                          <span className="text-white font-bold text-sm hover:underline cursor-pointer">Kenzu#0001</span>
                           <span className="text-[10px] text-[#949ba4] font-medium">Today at 05:59 AM</span>
                         </div>
                         <p className="text-[#dbdee1] text-sm mt-1 font-mono bg-[#1e1f22] px-2 py-1 rounded inline-block border border-zinc-800">{log.text}</p>

@@ -96,11 +96,11 @@ export default function WorldChatTab() {
   useEffect(() => {
     const currentIdentity = getIdentity();
     
-    // Establish socket connection to the server using highly compatible polling-first and websocket upgrade
-    const socket = io(window.location.origin, {
-      transports: ['polling', 'websocket'],
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
+    // Establish socket connection using direct websocket transport for 100% stable connection on Cloud Run
+    const socket = io({
+      transports: ['websocket'],
+      reconnectionAttempts: 15,
+      reconnectionDelay: 1500,
     });
     
     socketRef.current = socket;

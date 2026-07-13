@@ -44,6 +44,13 @@ const messagesHistory: ChatMessage[] = [
 ];
 
 const connectedSockets = new Map<string, ActiveUser>();
+let ioInstance: SocketIOServer | null = null;
+
+export function notifyConfigSync(guildId: string, updatedConfig: any) {
+  if (ioInstance) {
+    ioInstance.emit("config:sync", { guildId, config: updatedConfig, timestamp: Date.now() });
+  }
+}
 
 export function initSocket(httpServer: HTTPServer) {
   const io = new SocketIOServer(httpServer, {
@@ -52,6 +59,7 @@ export function initSocket(httpServer: HTTPServer) {
       methods: ["GET", "POST"]
     }
   });
+  ioInstance = io;
 
   io.on("connection", (socket) => {
     // 1. Send chat history to the newly connected client

@@ -36,9 +36,16 @@ export default function Login() {
   }, [loading, user]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-[#09090b] to-[#09090b]"></div>
+    <div className="min-h-screen bg-[#050507] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Interactive Neon Floating Orbs Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[15%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-600/15 blur-[120px] animate-float-neon-1"></div>
+        <div className="absolute -bottom-[15%] -right-[10%] w-[50%] h-[50%] rounded-full bg-purple-600/15 blur-[120px] animate-float-neon-2"></div>
+        <div className="absolute top-[40%] left-[60%] w-[35%] h-[35%] rounded-full bg-pink-500/10 blur-[100px] animate-float-neon-1" style={{ animationDelay: '-4s' }}></div>
+      </div>
+      
+      {/* Background radial gradient overlay */}
+      <div className="absolute inset-0 w-full h-full bg-[radial-gradient(circle_at_center,_transparent_40%,_#050507_100%)] z-0"></div>
       
       <AnimatePresence mode="wait">
         {showSplash ? (
@@ -50,8 +57,9 @@ export default function Login() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center justify-center z-10"
           >
-            <div className="text-white text-6xl md:text-8xl font-black tracking-tighter">
-              ONE<span className="text-blue-500">.</span>
+            <div className="text-white text-6xl md:text-8xl font-black tracking-tighter relative">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-[0_0_35px_rgba(168,85,247,0.5)]">ONE</span>
+              <span className="text-blue-500">.</span>
             </div>
           </motion.div>
         ) : (
@@ -60,8 +68,11 @@ export default function Login() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 p-10 rounded-3xl shadow-2xl max-w-md w-full text-center z-10"
+            className="bg-zinc-950/70 backdrop-blur-2xl border border-zinc-800/80 p-10 rounded-3xl shadow-2xl max-w-md w-full text-center z-10 animate-neon-pulse relative overflow-hidden"
           >
+            {/* Top glowing bar */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse" style={{ animationDuration: '3s' }}></div>
+
             <div className="flex justify-center mb-8">
               <div className="text-white text-4xl font-black tracking-tighter">
                 ONE<span className="text-blue-500">.</span>
@@ -70,7 +81,7 @@ export default function Login() {
             
             <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
             <p className="text-zinc-400 mb-6 text-sm">
-              Authenticate via Discord to access your unified dashboard.
+              Sign in with your Discord account to access your dashboard.
             </p>
             
             {authError && (

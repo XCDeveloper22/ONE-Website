@@ -20,6 +20,37 @@ export default function Dashboard() {
   
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
+  // Welcome Popup states
+  const [welcomePopup, setWelcomePopup] = useState<{ show: boolean; isFirstTime: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    
+    let dismissTimer: any;
+    const timer = setTimeout(() => {
+      try {
+        const hasLoggedIn = localStorage.getItem('one_has_logged_in');
+        if (!hasLoggedIn) {
+          setWelcomePopup({ show: true, isFirstTime: true });
+          localStorage.setItem('one_has_logged_in', 'true');
+        } else {
+          setWelcomePopup({ show: true, isFirstTime: false });
+        }
+        
+        dismissTimer = setTimeout(() => {
+          setWelcomePopup(prev => prev ? { ...prev, show: false } : null);
+        }, 6000);
+      } catch (e) {
+        setWelcomePopup({ show: true, isFirstTime: false });
+      }
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer);
+      if (dismissTimer) clearTimeout(dismissTimer);
+    };
+  }, [user]);
+
   // Legal Modal states
   const [legalOpen, setLegalOpen] = useState(false);
   const [activeLegalTab, setActiveLegalTab] = useState<'tos' | 'privacy' | 'cookies' | 'guidelines' | 'deletion'>('tos');
@@ -2297,6 +2328,53 @@ export default function Dashboard() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Welcome Popup Notification */}
+      <AnimatePresence>
+        {welcomePopup && welcomePopup.show && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: 'spring', duration: 0.5 }}
+            className="fixed top-20 right-4 md:right-8 z-[6000] max-w-sm w-full bg-zinc-950/90 backdrop-blur-xl border border-zinc-800/80 p-5 rounded-2xl shadow-2xl overflow-hidden"
+          >
+            {/* Edge Ambient Light */}
+            <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-blue-500/50 via-purple-500/50 to-pink-500/50"></div>
+            
+            <div className="flex items-start gap-4">
+              <div className="p-2 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl text-blue-400 shrink-0 relative">
+                <div className="absolute inset-0 bg-blue-500/10 rounded-xl blur-md animate-pulse"></div>
+                <Sparkles className="w-5 h-5 text-blue-400 relative z-10" />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <h4 className="text-white font-bold text-sm tracking-tight mb-1">
+                  System Notification
+                </h4>
+                <p className="text-zinc-300 text-xs leading-relaxed font-medium">
+                  {welcomePopup.isFirstTime ? (
+                    <>
+                      Welcome to <span className="text-blue-400 font-extrabold font-mono">ONE Dashboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      Welcome back! <span className="text-purple-400 font-extrabold font-mono">@{user?.username}</span>
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setWelcomePopup({ ...welcomePopup, show: false })}
+                className="text-zinc-500 hover:text-zinc-300 transition-colors p-1 rounded-lg hover:bg-zinc-900/60"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

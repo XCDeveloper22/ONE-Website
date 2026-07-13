@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { io, Socket } from 'socket.io-client';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Send, Users, Globe, Smile, User, Sparkles, AlertCircle, Wifi, WifiOff, Edit3, Check
+  Send, Users, Globe, Smile, User, Sparkles, AlertCircle, Wifi, WifiOff, Edit3, Check, Lock, Unlock
 } from 'lucide-react';
 import { ChatMessage } from '../../api/socket';
 
@@ -72,6 +72,7 @@ export default function WorldChatTab() {
   const [inputText, setInputText] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState<Record<string, { name: string; timestamp: number }>>({});
+  const [isLocked, setIsLocked] = useState(false);
   
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -134,6 +135,11 @@ export default function WorldChatTab() {
       setActiveUsers(usersList);
     });
 
+    // Receive lock status
+    socket.on('chat:lock', (locked: boolean) => {
+      setIsLocked(locked);
+    });
+
     // Receive typing notification
     socket.on('chat:typing', (data: { user: any; isTyping: boolean }) => {
       if (data.user.id === currentIdentity.id) return; // ignore self
@@ -184,6 +190,12 @@ export default function WorldChatTab() {
 
     return () => clearInterval(cleanupTyping);
   }, [typingUsers]);
+
+  // Toggle lock state
+  const handleToggleLock = () => {
+    if (!socketRef.current || !isConnected) return;
+    socketRef.current.emit('chat:lock', !isLocked);
+  };
 
   // Send Message function
   const handleSendMessage = (e?: React.FormEvent) => {
@@ -258,6 +270,30 @@ export default function WorldChatTab() {
     return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Helper to convert URLs to clickable links
+  const renderMessageText = (text: string, isSelf: boolean) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`underline break-all transition-all font-semibold ${
+              isSelf ? 'text-white hover:text-white/80' : 'text-blue-400 hover:text-blue-305'
+            }`}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   const currentIdentity = getIdentity();
 
   return (
@@ -285,6 +321,12 @@ export default function WorldChatTab() {
                     </>
                   )}
                 </span>
+                {isLocked && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse">
+                    <Lock className="w-2.5 h-2.5 text-amber-400" />
+                    Locked
+                  </span>
+                )}
               </h2>
               <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
                 A globally synchronized real-time lounge for everyone and all community members using ONE. Platform.
@@ -339,6 +381,19 @@ export default function WorldChatTab() {
               <Edit3 className="w-4 h-4" />
             </button>
           )}
+
+          <button
+            onClick={handleToggleLock}
+            disabled={!isConnected}
+            className={`p-2 rounded-xl border transition-all ml-1.5 flex items-center justify-center shrink-0 ${
+              isLocked 
+                ? 'bg-amber-500/10 text-amber-400 border-amber-500/25 hover:bg-amber-500/20 animate-pulse' 
+                : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+            }`}
+            title={isLocked ? "Unlock World Chat" : "Lock World Chat"}
+          >
+            {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
@@ -498,7 +553,10 @@ export default function WorldChatTab() {
           <div className="md:hidden flex items-center justify-between px-4 py-3 bg-zinc-950/40 border-b border-zinc-850/60 shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-              <h2 className="text-white font-bold text-sm tracking-tight">World Chat Room</h2>
+              <h2 className="text-white font-bold text-sm tracking-tight flex items-center gap-1">
+                World Chat Room
+                {isLocked && <span className="text-xs text-amber-400 animate-pulse">🔒</span>}
+              </h2>
             </div>
             
             <div className="flex items-center gap-2">
@@ -509,6 +567,19 @@ export default function WorldChatTab() {
               >
                 <Users className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
                 <span>{activeUsers.length}</span>
+              </button>
+
+              <button
+                onClick={handleToggleLock}
+                disabled={!isConnected}
+                className={`p-1.5 rounded-xl border transition-all flex items-center justify-center ${
+                  isLocked 
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/25 animate-pulse' 
+                    : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                }`}
+                title={isLocked ? "Unlock World Chat" : "Lock World Chat"}
+              >
+                {isLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
               </button>
 
               {currentIdentity.isGuest && (
@@ -610,8 +681,45 @@ export default function WorldChatTab() {
                             : 'bg-zinc-900 border border-zinc-850 text-zinc-300 rounded-tl-none'
                         }`}
                       >
-                        {msg.text}
+                        {renderMessageText(msg.text, isSelf)}
                       </div>
+
+                      {/* URL Thumbnail Card for onewebsite.vercel.app */}
+                      {/onewebsite\.vercel\.app/i.test(msg.text) && (
+                        <motion.a
+                          href="https://onewebsite.vercel.app/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          initial={{ opacity: 0, y: 5, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          className={`flex flex-col sm:flex-row items-stretch gap-4.5 p-4 rounded-2xl border bg-zinc-950/80 backdrop-blur-md transition-all hover:border-blue-500/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] group max-w-sm mt-1 border-zinc-800/80`}
+                        >
+                          {/* Thumbnail */}
+                          <div className="w-14 h-14 bg-zinc-900 rounded-xl overflow-hidden flex-shrink-0 border border-zinc-800/80 relative self-center flex items-center justify-center">
+                            <img
+                              src="/src/assets/images/one_favicon_1783937659435.jpg"
+                              alt="ONE. Platform Logo"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              referrerPolicy="no-referrer"
+                            />
+                            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                          </div>
+
+                          {/* Preview Details */}
+                          <div className="flex-1 flex flex-col justify-center min-w-0">
+                            <div className="flex items-center gap-1 text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-0.5">
+                              <Globe className="w-3 h-3 text-blue-500" />
+                              <span>onewebsite.vercel.app</span>
+                            </div>
+                            <h5 className="text-white font-bold text-xs leading-snug group-hover:text-blue-400 transition-colors truncate">
+                              ONE. Platform Dashboard
+                            </h5>
+                            <p className="text-zinc-400 text-[11px] leading-relaxed mt-0.5 line-clamp-1">
+                              The unified real-time dashboard and community lounge.
+                            </p>
+                          </div>
+                        </motion.a>
+                      )}
                     </div>
                   </div>
                 );
@@ -639,26 +747,33 @@ export default function WorldChatTab() {
 
           {/* Text Input area bar */}
           <div className="bg-zinc-950/60 p-4 border-t border-zinc-850 flex items-center shrink-0">
-            <form onSubmit={handleSendMessage} className="w-full flex gap-2.5 items-center">
-              <input
-                type="text"
-                disabled={!isConnected}
-                maxLength={500}
-                value={inputText}
-                onChange={handleInputKeyPress}
-                placeholder={isConnected ? "Message #global-chat-room..." : "Connecting to real-time chat service..."}
-                className="w-full bg-zinc-900/80 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-blue-500 disabled:opacity-50 transition-all shadow-inner"
-              />
-              
-              <button
-                type="submit"
-                disabled={!inputText.trim() || !isConnected}
-                className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-2xl text-white transition-all active:scale-95 shadow-lg shadow-blue-500/15 shrink-0"
-                title="Send Message"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
+            {isLocked ? (
+              <div className="w-full flex items-center justify-center gap-2.5 py-3.5 bg-amber-500/5 border border-amber-500/15 rounded-2xl text-amber-500/80 text-xs font-semibold tracking-wide">
+                <Lock className="w-4 h-4 animate-bounce" style={{ animationDuration: '3s' }} />
+                <span>The World Chat room has been locked by a moderator</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSendMessage} className="w-full flex gap-2.5 items-center">
+                <input
+                  type="text"
+                  disabled={!isConnected}
+                  maxLength={500}
+                  value={inputText}
+                  onChange={handleInputKeyPress}
+                  placeholder={isConnected ? "Message #global-chat-room..." : "Connecting to real-time chat service..."}
+                  className="w-full bg-zinc-900/80 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-blue-500 disabled:opacity-50 transition-all shadow-inner"
+                />
+                
+                <button
+                  type="submit"
+                  disabled={!inputText.trim() || !isConnected}
+                  className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 rounded-2xl text-white transition-all active:scale-95 shadow-lg shadow-blue-500/15 shrink-0"
+                  title="Send Message"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
+            )}
           </div>
 
         </div>

@@ -45,6 +45,7 @@ const messagesHistory: ChatMessage[] = [
 
 const connectedSockets = new Map<string, ActiveUser>();
 let ioInstance: SocketIOServer | null = null;
+let isChatLocked = false;
 
 export function notifyConfigSync(guildId: string, updatedConfig: any) {
   if (ioInstance) {
@@ -64,6 +65,7 @@ export function initSocket(httpServer: HTTPServer) {
   io.on("connection", (socket) => {
     // 1. Send chat history to the newly connected client
     socket.emit("chat:history", messagesHistory);
+    socket.emit("chat:lock", isChatLocked);
 
     // 2. Handle a user joining the chat
     socket.on("chat:join", (user) => {
@@ -103,9 +105,35 @@ export function initSocket(httpServer: HTTPServer) {
       io.emit("chat:message", systemMsg);
     });
 
+    // Handle chat lock state change
+    socket.on("chat:lock", (locked: boolean) => {
+      isChatLocked = locked;
+      io.emit("chat:lock", isChatLocked);
+
+      // Broadcast system notice about lock state change
+      const systemMsg: ChatMessage = {
+        id: `sys-lock-${Date.now()}`,
+        text: locked ? "🔒 The World Chat room has been locked by a moderator." : "🔓 The World Chat room has been unlocked.",
+        user: {
+          id: "system",
+          username: "ONE. System",
+          global_name: "ONE Bot",
+          avatar: null,
+          isGuest: false
+        },
+        timestamp: Date.now()
+      };
+      messagesHistory.push(systemMsg);
+      if (messagesHistory.length > MAX_MESSAGES) {
+        messagesHistory.shift();
+      }
+      io.emit("chat:message", systemMsg);
+    });
+
     // 3. Handle sending a message
     socket.on("chat:message", (messageData: { text: string; user: any }) => {
       if (!messageData || !messageData.text || !messageData.user) return;
+      if (isChatLocked) return; // Prevent sending if locked
 
       const newMessage: ChatMessage = {
         id: Math.random().toString(36).substring(2, 11),

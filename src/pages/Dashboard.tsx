@@ -12,7 +12,7 @@ import BotStatusWidget from '../components/BotStatusWidget';
 import CommandsTab from '../components/CommandsTab';
 import { io } from 'socket.io-client';
 
-type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'donate';
+type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'moderation' | 'settings' | 'donate';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -138,6 +138,8 @@ export default function Dashboard() {
     { id: 'servers' as const, label: 'Servers', icon: Server },
     { id: 'members' as const, label: 'Members', icon: Users },
     { id: 'commands' as const, label: 'Commands', icon: Code2 },
+    { id: 'moderation' as const, label: 'Moderation', icon: Shield, locked: true },
+    { id: 'settings' as const, label: 'Settings', icon: Settings, locked: true },
     { id: 'donate' as const, label: 'Donate', icon: Heart, locked: true },
   ];
 
@@ -744,8 +746,43 @@ export default function Dashboard() {
                 </motion.div>
               )}
 
+              {activeTab === 'moderation' && (
+                <motion.div
+                  key="moderation"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center py-20 text-center"
+                >
+                  <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6">
+                    <Shield className="w-10 h-10 text-zinc-500" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Moderation Features</h2>
+                  <p className="text-zinc-400 max-w-md">
+                    Advanced moderation tools, automated filtering, and activity logs are being planned. This module is currently locked and under construction.
+                  </p>
+                </motion.div>
+              )}
 
-
+              {activeTab === 'settings' && (
+                <motion.div
+                  key="settings"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center py-20 text-center"
+                >
+                  <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6">
+                    <Settings className="w-10 h-10 text-zinc-500" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">System Settings</h2>
+                  <p className="text-zinc-400 max-w-md">
+                    Global bot configurations, language preferences, and server defaults are being planned. This module is currently locked and under construction.
+                  </p>
+                </motion.div>
+              )}
             </AnimatePresence>
 
           </div>

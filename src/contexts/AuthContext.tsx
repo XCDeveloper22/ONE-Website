@@ -4,6 +4,7 @@ import { DiscordUser } from '../types';
 interface AuthContextType {
   user: DiscordUser | null;
   loading: boolean;
+  isLoggingIn: boolean;
   authError: string | null;
   login: () => void;
   logout: () => Promise<void>;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<DiscordUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,14 +38,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
     // Listen for OAuth success from popup
     const handleMessage = (event: MessageEvent) => {
-      // Allow localhost and *.run.app
-      const origin = event.origin;
-      if (!origin.endsWith('.run.app') && !origin.includes('localhost')) {
+      // Verify origin matches our window location
+      if (event.origin !== window.location.origin) {
         return;
       }
       
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS' && event.data?.user) {
         setUser(event.data.user);
+        setAuthError(null);
+        setIsLoggingIn(false);
       }
     };
     
@@ -54,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async () => {
     try {
       setAuthError(null);
+      setIsLoggingIn(true);
       const response = await fetch('/api/auth/url');
       if (!response.ok) {
         throw new Error('Please configure DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET in the AI Studio Settings (Secrets menu) to enable the real Discord login.');
@@ -68,10 +72,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (!authWindow) {
         setAuthError('Please allow popups for this site to connect your Discord account.');
+        setIsLoggingIn(false);
+        return;
       }
+
+      // Check if popup is closed to stop loading spinner
+      const checkWindowInterval = setInterval(() => {
+        if (authWindow.closed) {
+          clearInterval(checkWindowInterval);
+          setIsLoggingIn(false);
+        }
+      }, 500);
+
     } catch (error: any) {
       console.error('OAuth error:', error);
       setAuthError(error.message);
+      setIsLoggingIn(false);
     }
   };
 
@@ -85,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, authError, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, isLoggingIn, authError, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

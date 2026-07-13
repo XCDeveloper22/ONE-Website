@@ -11,21 +11,21 @@ const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 
 const getRedirectUri = (req: express.Request) => {
-  // Use Vercel URL if available
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}/api/auth/callback`;
+  // If a specific APP_URL is provided, prioritize it
+  if (process.env.APP_URL) {
+    return `${process.env.APP_URL.replace(/\/$/, '')}/api/auth/callback`;
   }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}/api/auth/callback`;
+
+  // Dynamically determine the URL from the request headers (works well in Vercel)
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  const protocol = req.headers['x-forwarded-proto'] || 'https'; // Default to https for Vercel/Production
+
+  // Fallback for local development
+  if (host && host.includes('localhost')) {
+    return `http://${host}/api/auth/callback`;
   }
-  
-  const APP_URL = process.env.APP_URL;
-  if (APP_URL) {
-    return `${APP_URL.replace(/\/$/, '')}/api/auth/callback`;
-  }
-  
-  // Fallback to host header
-  return `http://${req.headers.host}/api/auth/callback`;
+
+  return `${protocol}://${host}/api/auth/callback`;
 };
 
 // 1. Return URL to open in popup

@@ -91,6 +91,19 @@ export default function Dashboard() {
               Settings
               <span className="ml-auto text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded-md uppercase font-bold tracking-wider">Soon</span>
             </button>
+            
+            <div className="pt-6 pb-2 px-4">
+              <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Integrations</div>
+            </div>
+            <a 
+              href="https://discord.com/oauth2/authorize?client_id=1495690757707923608&permissions=8866461766385655&integration_type=0&scope=bot+applications.commands"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white transition-colors group shadow-lg shadow-blue-500/20"
+            >
+              <ExternalLink className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+              <span className="font-medium">Invite Bot</span>
+            </a>
           </nav>
         </div>
         
@@ -230,6 +243,19 @@ export default function Dashboard() {
                           };
                           const iconId = iconMap[conn.type.toLowerCase()] || conn.type.toLowerCase();
                           
+                          // Override dark or invisible default logos with white or a visible color
+                          const colorOverrides: Record<string, string> = {
+                            github: 'white',
+                            x: 'white',
+                            roblox: 'white',
+                            steam: 'white',
+                            epicgames: 'white',
+                            playstation: '0070D1', // Visible Playstation blue instead of default very dark blue
+                          };
+                          
+                          const colorSuffix = colorOverrides[iconId] ? `/${colorOverrides[iconId]}` : '';
+                          const iconUrl = `https://cdn.simpleicons.org/${iconId}${colorSuffix}`;
+                          
                           return (
                             <motion.div 
                               initial={{ opacity: 0, scale: 0.9 }}
@@ -239,7 +265,7 @@ export default function Dashboard() {
                               className="bg-zinc-950/50 border border-zinc-800/80 px-4 py-3.5 rounded-2xl flex flex-col items-center gap-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all group"
                             >
                               <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center shadow-inner">
-                                <img src={`https://cdn.simpleicons.org/${iconId}/white`} alt={conn.type} className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                                <img src={iconUrl} alt={conn.type} className="w-5 h-5 opacity-90 group-hover:opacity-100 transition-opacity" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                               </div>
                               <span className="text-zinc-300 font-medium text-sm truncate w-full text-center">{conn.name}</span>
                             </motion.div>

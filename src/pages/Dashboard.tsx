@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { DiscordGuild, DiscordConnection } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import BotStatusWidget from '../components/BotStatusWidget';
 
 type Tab = 'overview' | 'servers' | 'members' | 'moderation' | 'settings';
 
@@ -398,6 +399,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Bot Status Widget */}
+                  <BotStatusWidget />
                   
                   {/* Stats Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">

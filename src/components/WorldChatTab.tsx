@@ -96,10 +96,10 @@ export default function WorldChatTab() {
   useEffect(() => {
     const currentIdentity = getIdentity();
     
-    // Establish socket connection to the server
+    // Establish socket connection to the server using highly compatible polling-first and websocket upgrade
     const socket = io(window.location.origin, {
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
     });
     
@@ -530,13 +530,21 @@ export default function WorldChatTab() {
 
           {/* Chat room messages view port */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4.5 custom-scrollbar min-h-0 bg-zinc-950/20">
-            {messages.length === 0 ? (
+            {!isConnected ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 text-zinc-500">
                 <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-850 flex items-center justify-center text-zinc-400 mb-3 animate-pulse">
-                  <Globe className="w-6 h-6" />
+                  <Globe className="w-6 h-6 animate-spin" style={{ animationDuration: '4s' }} />
                 </div>
                 <p className="text-sm font-medium">Connecting to World Chat room...</p>
-                <p className="text-xs text-zinc-600 mt-1">Chat messages will stream in once synchronization is complete.</p>
+                <p className="text-xs text-zinc-600 mt-1">Establishing real-time synchronization with the server.</p>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 text-zinc-500">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-850 flex items-center justify-center text-zinc-400 mb-3">
+                  <Globe className="w-6 h-6 text-zinc-500" />
+                </div>
+                <p className="text-sm font-medium">World Chat is Active</p>
+                <p className="text-xs text-zinc-600 mt-1">No messages in this room yet. Be the first to start the conversation!</p>
               </div>
             ) : (
               messages.map((msg) => {

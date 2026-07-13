@@ -203,6 +203,19 @@ export default function Dashboard() {
               <ExternalLink className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform shrink-0" />
               <span className="font-medium truncate">Invite Bot</span>
             </a>
+
+            <div className="pt-4 pb-2 px-4">
+              <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Community</div>
+            </div>
+            <a 
+              href="https://discord.gg/nRpkj5SuTs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white transition-colors group shadow-lg shadow-[#5865F2]/20"
+            >
+              <Users className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform shrink-0" />
+              <span className="font-medium truncate">Join us</span>
+            </a>
           </nav>
         </div>
         
@@ -316,6 +329,19 @@ export default function Dashboard() {
                     <span>Invite Bot</span>
                   </a>
                 </div>
+
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest px-3 mb-2">Community</div>
+                  <a 
+                    href="https://discord.gg/nRpkj5SuTs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2.5 px-3.5 py-3 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-medium transition-colors shadow-lg shadow-[#5865F2]/20 text-sm"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>Join us</span>
+                  </a>
+                </div>
               </div>
 
               <div className="p-4 border-t border-zinc-800 bg-zinc-950/80">
@@ -345,12 +371,23 @@ export default function Dashboard() {
           <h1 className="text-lg md:text-xl font-bold text-white capitalize tracking-tight">
             {activeTab === 'world_chat' ? 'World Chat' : `${activeTab} Dashboard`}
           </h1>
-          <div className="flex items-center gap-3 text-xs md:text-sm font-medium bg-zinc-900/50 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-zinc-800">
-            <span className="text-zinc-500 hidden sm:inline">System:</span>
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
-              Online
-            </span>
+          <div className="flex items-center gap-3">
+            <a 
+              href="https://discord.gg/nRpkj5SuTs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-[#5865F2]/10 hover:bg-[#5865F2]/20 text-[#5865F2] px-3.5 py-1.5 rounded-full border border-[#5865F2]/30 text-xs font-bold transition-all shrink-0 active:scale-95"
+            >
+              <Users className="w-3.5 h-3.5" />
+              Join us
+            </a>
+            <div className="flex items-center gap-3 text-xs md:text-sm font-medium bg-zinc-900/50 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-zinc-800 shrink-0">
+              <span className="text-zinc-500 hidden sm:inline">System:</span>
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                Online
+              </span>
+            </div>
           </div>
         </header>
         

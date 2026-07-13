@@ -41,13 +41,13 @@ export default function WorldChatTab() {
     // Generate new random guest profile
     const randomId = 'guest_' + Math.random().toString(36).substring(2, 9);
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const randomName = `ServerOwner_${randomNum}`;
+    const randomName = `Chatter_${randomNum}`;
     const randomColor = GUEST_COLORS[Math.floor(Math.random() * GUEST_COLORS.length)];
     
     const profile: GuestProfile = {
       id: randomId,
       username: randomName,
-      global_name: `Guest Admin #${randomNum}`,
+      global_name: `Guest Member #${randomNum}`,
       avatar: null,
       isGuest: true,
       color: randomColor
@@ -287,7 +287,7 @@ export default function WorldChatTab() {
                 </span>
               </h2>
               <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
-                A globally synchronized real-time lounge for developers and guild owners using ONE. Platform.
+                A globally synchronized real-time lounge for everyone and all community members using ONE. Platform.
               </p>
             </div>
           </div>
@@ -594,7 +594,7 @@ export default function WorldChatTab() {
                         </span>
                         
                         <span className={`text-[8px] font-black tracking-widest uppercase px-1 rounded ${msg.user.isGuest ? 'bg-amber-500/10 text-amber-500 border border-amber-500/15' : 'bg-blue-500/10 text-blue-500 border border-blue-500/15'}`}>
-                          {msg.user.isGuest ? 'Guest' : 'Staff'}
+                          {msg.user.isGuest ? 'Guest' : 'Member'}
                         </span>
 
                         <span className="text-[10px] text-zinc-500 font-medium">

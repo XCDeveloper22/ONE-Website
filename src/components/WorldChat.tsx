@@ -96,14 +96,16 @@ export default function WorldChat() {
     }
   }, [user]);
 
-  const activeChatUser = user ? {
-    id: user.id,
-    username: user.username,
-    global_name: user.global_name,
-    avatar: user.avatar,
-    isGuest: false,
-    color: '#3B82F6'
-  } : guestUser;
+  const activeChatUser = React.useMemo(() => {
+    return user ? {
+      id: user.id,
+      username: user.username,
+      global_name: user.global_name,
+      avatar: user.avatar,
+      isGuest: false,
+      color: '#3B82F6'
+    } : guestUser;
+  }, [user, guestUser]);
 
   // Setup WebSocket connection
   useEffect(() => {
@@ -203,6 +205,13 @@ export default function WorldChat() {
     typingTimerRef.current = setTimeout(() => {
       socket.emit('chat:typing', { user: activeChatUser, isTyping: false });
     }, 2000);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   // Convert File to Base64 helper
@@ -697,6 +706,7 @@ export default function WorldChat() {
                   type="text"
                   value={inputText}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                   disabled={isRecording || isUploading}
                   placeholder={isRecording ? "Microphone active..." : "Say something to the world..."}
                   className="w-full bg-zinc-900/60 hover:bg-zinc-900/80 focus:bg-zinc-900/90 border border-zinc-800/80 focus:border-blue-500/50 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500/30 transition-all duration-200 disabled:opacity-50"

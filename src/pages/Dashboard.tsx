@@ -10,9 +10,10 @@ import { DiscordGuild, DiscordConnection } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import BotStatusWidget from '../components/BotStatusWidget';
 import CommandsTab from '../components/CommandsTab';
+import WorldChat from '../components/WorldChat';
 import { io } from 'socket.io-client';
 
-type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'moderation' | 'settings' | 'donate';
+type Tab = 'overview' | 'servers' | 'members' | 'commands' | 'chat' | 'moderation' | 'settings' | 'donate';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -138,6 +139,7 @@ export default function Dashboard() {
     { id: 'servers' as const, label: 'Servers', icon: Server },
     { id: 'members' as const, label: 'Members', icon: Users },
     { id: 'commands' as const, label: 'Commands', icon: Code2 },
+    { id: 'chat' as const, label: 'World Chat', icon: Globe },
     { id: 'moderation' as const, label: 'Moderation', icon: Shield, locked: true },
     { id: 'settings' as const, label: 'Settings', icon: Settings, locked: true },
     { id: 'donate' as const, label: 'Donate', icon: Heart, locked: true },
@@ -750,6 +752,18 @@ export default function Dashboard() {
                   transition={{ duration: 0.3 }}
                 >
                   <CommandsTab />
+                </motion.div>
+              )}
+
+              {activeTab === 'chat' && (
+                <motion.div
+                  key="chat"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <WorldChat />
                 </motion.div>
               )}
 

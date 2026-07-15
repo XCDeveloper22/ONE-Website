@@ -13,6 +13,9 @@ export interface ChatMessage {
     color?: string; // For guest users to have unique color tags
   };
   timestamp: number;
+  photoUrl?: string;
+  voicemailUrl?: string;
+  videoUrl?: string;
 }
 
 export interface ActiveUser {
@@ -131,13 +134,17 @@ export function initSocket(httpServer: HTTPServer) {
     });
 
     // 3. Handle sending a message
-    socket.on("chat:message", (messageData: { text: string; user: any }) => {
-      if (!messageData || !messageData.text || !messageData.user) return;
+    socket.on("chat:message", (messageData: { text?: string; user: any; photoUrl?: string; voicemailUrl?: string; videoUrl?: string }) => {
+      if (!messageData || !messageData.user) return;
       if (isChatLocked) return; // Prevent sending if locked
+
+      const text = (messageData.text || "").trim();
+      const hasContent = text || messageData.photoUrl || messageData.voicemailUrl || messageData.videoUrl;
+      if (!hasContent) return;
 
       const newMessage: ChatMessage = {
         id: Math.random().toString(36).substring(2, 11),
-        text: messageData.text.trim().substring(0, 500), // Protect against massive payloads
+        text: text.substring(0, 1000), // Allow up to 1000 chars
         user: {
           id: messageData.user.id,
           username: messageData.user.username,
@@ -146,7 +153,10 @@ export function initSocket(httpServer: HTTPServer) {
           isGuest: !!messageData.user.isGuest,
           color: messageData.user.color || "#3B82F6"
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        photoUrl: messageData.photoUrl,
+        voicemailUrl: messageData.voicemailUrl,
+        videoUrl: messageData.videoUrl
       };
 
       messagesHistory.push(newMessage);

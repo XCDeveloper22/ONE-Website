@@ -83,21 +83,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Start beautiful login transition animation
         setTransitionState('login');
         setTransitionProgress(0);
-        setTransitionStatus('Authenticating secure session with Discord...');
+        setTransitionStatus('Getting things ready...');
 
         let progress = 0;
         const interval = setInterval(() => {
-          progress += 5;
+          progress += 1;
           if (progress <= 25) {
-            setTransitionStatus('Connecting to Discord Secure Gateway...');
+            setTransitionStatus('Connecting to Discord...');
           } else if (progress <= 50) {
-            setTransitionStatus('Synchronizing servers, profile & active roles...');
+            setTransitionStatus('Loading your profile...');
           } else if (progress <= 75) {
-            setTransitionStatus('Initializing ONE real-time Gateway Websocket...');
+            setTransitionStatus('Setting up your dashboard...');
           } else if (progress <= 95) {
-            setTransitionStatus('Preparing dashboard layouts & preferences...');
+            setTransitionStatus('Almost there...');
           } else {
-            setTransitionStatus('Welcome back, Operator!');
+            setTransitionStatus('Welcome back!');
           }
           setTransitionProgress(Math.min(progress, 100));
 
@@ -113,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setTransitionState(null);
             }, 300);
           }
-        }, 80);
+        }, 40);
       }
     };
     
@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setTransitionState('logout');
     setTransitionProgress(0);
-    setTransitionStatus('Initiating secure session termination...');
+    setTransitionStatus('Signing you out...');
 
     try {
       await fetch('/api/logout', { method: 'POST' });
@@ -171,15 +171,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 8;
+      progress += 1;
       if (progress <= 30) {
-        setTransitionStatus('Revoking Discord active session tokens...');
+        setTransitionStatus('Disconnecting from Discord...');
       } else if (progress <= 60) {
-        setTransitionStatus('Clearing local session caches & credentials...');
+        setTransitionStatus('Clearing your data...');
       } else if (progress <= 85) {
-        setTransitionStatus('Terminating real-time server connections...');
+        setTransitionStatus('Finishing up...');
       } else {
-        setTransitionStatus('Session terminated safely.');
+        setTransitionStatus('You have been logged out.');
       }
       setTransitionProgress(Math.min(progress, 100));
 
@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setTransitionState(null);
         }, 350);
       }
-    }, 80);
+    }, 40);
   };
 
   return (
@@ -247,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               {/* Text Information */}
               <div className="space-y-2">
                 <h3 className="text-xl font-black text-white tracking-tight">
-                  {transitionState === 'login' ? 'Synchronizing Dashboard' : 'Logging Out'}
+                  {transitionState === 'login' ? 'Logging In' : 'Logging Out'}
                 </h3>
                 <p className="text-xs font-mono text-zinc-500 tracking-wider h-4 uppercase">
                   {transitionStatus}
